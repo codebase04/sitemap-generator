@@ -15,11 +15,11 @@ pip install -r requirements.txt
 ## Usage
 
 ``` bash
-python3 sitemap-generator.py https://www.example.com
+python sitemap-generator.py https://www.example.com
 ```
 
 FOR HELP
 
 ``` bash
-python3 sitemap-generator.py -h
+python sitemap-generator.py -h
 ```
