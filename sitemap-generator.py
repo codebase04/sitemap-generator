@@ -1,7 +1,6 @@
 import argparse
 import requests
 from bs4 import BeautifulSoup
-import xml.etree.ElementTree as ET
 
 
 def create_sitemap(url):
@@ -11,28 +10,39 @@ def create_sitemap(url):
     # Analyse the HTML of the page with the BeautifulSoup library
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Creates the root element of the sitemap XML
-    root = ET.Element("urlset")
-    root.set("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9")
+    # Create the sitemap XML content
+    xml_content = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml_content += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
 
-    # For each link on the page, create a url element in the XML sitemap
+    # For each link on the page, add a url element to the XML content
     for link in soup.find_all("a"):
-        url = ET.SubElement(root, "url")
-        loc = ET.SubElement(url, "loc")
-        loc.text = link.get("href")
+        loc = link.get("href")
+        lastmod = "2023-06-05"  # Replace with the appropriate last modified date
+        changefreq = "daily"  # Replace with the appropriate change frequency
+        priority = "1.0"  # Replace with the appropriate priority
 
-    # Generate the XML sitemap file
-    tree = ET.ElementTree(root)
-    tree.write("sitemap.xml", encoding="utf-8", xml_declaration=True)
+        url_element = f'   <url>\n      <loc>{loc}</loc>\n'
+        url_element += f'      <lastmod>{lastmod}</lastmod>\n'
+        url_element += f'      <changefreq>{changefreq}</changefreq>\n'
+        url_element += f'      <priority>{priority}</priority>\n   </url>\n'
+
+        xml_content += url_element
+
+    # Close the urlset tag
+    xml_content += '</urlset>\n'
+
+    # Write the XML content to the sitemap.xml file
+    with open("sitemap.xml", "w", encoding="utf-8") as f:
+        f.write(xml_content)
 
 
 if __name__ == "__main__":
-    # Sets command line arguments
+    # Set command line arguments
     parser = argparse.ArgumentParser(description="Creates a sitemap from a URL.")
     parser.add_argument("url", help="The URL of the site you want to create a sitemap for.")
 
-    # Parses the command line arguments
+    # Parse the command line arguments
     args = parser.parse_args()
 
-    # Creates the sitemap based on the provided URL
+    # Create the sitemap based on the provided URL
     create_sitemap(args.url)
